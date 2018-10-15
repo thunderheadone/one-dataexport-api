@@ -1,0 +1,252 @@
+swagger: '2.0'
+info:
+  description: >-
+      This API supports:
+        * Requesting a list of available data exports for a given Space.
+        * Requesting a single data export from the list of available exports.
+  version: 1.0.0
+  title: DataExport API documentation
+  x-logo:
+    url: 'https://www.thunderhead.com/uploads/2015/07/Thunderhead_LogoIcon_Aubergine.png'
+tags:
+  - name: DataExportHandler
+    description: 'Use the Data Export API to retrieve raw data files about your Customers and the Actions and Activities they are triggering at your Touchpoints.'
+paths:
+  '/{workspaceId}/dataexport':
+    parameters:
+      - name: workspaceId
+        in: path
+        description: >-
+          The workspace ID for your Space. Found in the Welcome URL displayed
+          after you sign in and select your Space.
+        required: true
+        type: string
+        x-example: MTIyMG
+      - name: all
+        in: query
+        description: >-
+         Requesting the exports with the all flag set to false will return
+         a list of all exports in Available status. True will return all
+         exports regardless of status.
+        type: boolean
+        required: false
+        default: false
+    get:
+      tags:
+        - DataExportHandler
+      operationId: getDataExports
+      produces:
+        - application/json
+      description: >-
+        Get a list of data exports for the given Space sorted from most
+        recent to oldest.
+      responses:
+        '200':
+          description: >-
+            Successfully get list of exports for the given Space.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ExportMetadataView'
+        '401':
+          description: >-
+            Invalid OAuth 2.0 token or Invalid workspaceId
+  '/{workspaceId}/dataexport/securelink/{exportId}':
+    parameters:
+      - name: workspaceId
+        in: path
+        description: >-
+          The workspace ID for your Space. Found in the Welcome URL
+          displayed after you sign in and select your Space.
+        required: true
+        type: string
+        x-example: MTIyMG
+      - name: exportId
+        in: path
+        description: The ID of the Export.
+        required: true
+        type: string
+        x-example: 'f41363c6-2ab3-4182-9217-cf598e242e1a'
+    get:
+      tags:
+        - DataExportHandler
+      operationId: getSecureLink
+      produces:
+        - application/json
+      description: 'Returns a secure link to download a single data export.'
+      responses:
+        '200':
+          description: 'A secure link to download a single data export.'
+          schema:
+            $ref: '#/definitions/SecureLink'
+        '401':
+          description: 'Invalid OAuth 2.0 token or Invalid workspaceId.'
+  '/{workspaceId}/dataexport/latest/{exportName}':
+    parameters:
+      - name: workspaceId
+        in: path
+        description: >-
+          The workspace ID for your Space. Found in the Welcome URL displayed
+          after you sign in and select your Space.
+        required: true
+        type: string
+        x-example: MTIyMG
+      - name: exportName
+        in: path
+        description: The name of the export.
+        required: true
+        type: string
+        x-example: '7Days'
+    get:
+      tags:
+        - DataExportHandler
+      operationId: getLatestInfo
+      produces:
+        - application/json
+      description: >-
+          Get a list of data exports and their secure links by export name.
+      responses:
+        '200':
+          description: >-
+            The list of export names and secure download links ordered by most recent to oldest.
+          schema:
+            $ref: '#/definitions/LatestInfo'
+        '401':
+          description: 'Invalid OAuth 2.0 token or Invalid workspaceId.'
+  '/{workspaceId}/dataexport/{exportId}':
+    parameters:
+      - name: workspaceId
+        in: path
+        description: >-
+          The workspace ID for your Space. Found in the Welcome URL displayed
+          after you sign in and select your Space.
+        required: true
+        type: string
+        x-example: MTIyMG
+      - name: exportId
+        in: path
+        description: >-
+          The ID of the Export. Found in the response body of the request for a list of exports.
+        required: true
+        type: string
+        x-example: 'f41363c6-2ab3-4182-9217-cf598e242e1a'
+      - name: expiryMinutes
+        in: query
+        description: >-
+          Desired lifespan for the download link in minutes.
+        required: false
+        default: 10
+        type: integer
+    get:
+      tags:
+        - DataExportHandler
+      operationId: getDownloadLink
+      produces:
+        - application/json
+      description: 'Validates the secure link and redirects the browser to download the export.'
+      responses:
+        '302':
+          description: Redirect to download link.
+          schema:
+            type: file
+        '401':
+          description: 'Invalid OAuth 2.0 token or Invalid workspaceId.'
+  '/{workspaceId}/dataexport/delete/{exportId}':
+    parameters:
+      - name: workspaceId
+        in: path
+        description: >-
+          The workspace ID for your Space. Found in the Welcome URL displayed
+          after you sign in and select your Space.
+        required: true
+        type: string
+        x-example: MTIyMG
+      - name: exportId
+        in: path
+        description: >-
+          The ID of the Export. Found in the response body of the request for a list of exports.
+        required: true
+        type: string
+        x-example: 'f41363c6-2ab3-4182-9217-cf598e242e1a'
+    delete:
+      tags:
+        - DataExportHandler
+      operationId: deleteBlobAndMetadata
+      produces:
+        - application/json
+      description: >-
+        Deletes a single data export.
+      responses:
+        '200':
+          description: 'Delete operation successful.'
+        '401':
+          description: 'Invalid OAuth 2.0 token or Invalid workspaceId.'
+definitions:
+  ExportMetadataView:
+    type: object
+    required:
+      - exportId
+      - userId
+    properties:
+      exportId:
+        type: string
+      status:
+        type: string
+      userId:
+        type: string
+      name:
+        type: string
+      startDate:
+        type: string
+      endDate:
+        type: string
+      type:
+        type: string
+      createDate:
+        type: string
+        format: date
+      size:
+        type: integer
+        format: int64
+      contentMD5:
+        type: string
+      apiVersion:
+        type: string
+  LatestInfo:
+    type: object
+    required:
+      - dataSets
+    properties:
+      dataSets:
+        type: array
+        items:
+          $ref: '#/definitions/DataSet'
+  DataSet:
+    type: object
+    required:
+      - name
+      - link
+    properties:
+      name:
+        type: string
+      link:
+        type: string
+  SecureLink:
+    type: object
+    required:
+      - secureLink
+    properties:
+      secureLink:
+        type: string
+schemes:
+  - https
+security:
+  - OAuth2: []
+securityDefinitions:
+  OAuth2:
+    type: oauth2
+    flow: application
+    tokenUrl: 'https://eu2.thunderhead.com/one/oauth2token'
+    scopes: {}
+host: eu2.thunderhead.com
+basePath: /one/oauth2/batch/
