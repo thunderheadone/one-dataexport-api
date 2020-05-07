@@ -7,7 +7,7 @@ info:
   version: 1.0.0
   title: DataExport API documentation
   x-logo:
-    url: 'https://www.thunderhead.com/uploads/2015/07/Thunderhead_LogoIcon_Aubergine.png'
+    url: 'https://i.imgur.com/gfizURy.png'
 tags:
   - name: DataExportHandler
     description: 'Use the Data Export API to retrieve raw data files about your Customers and the Actions and Activities they are triggering at your Touchpoints.'
