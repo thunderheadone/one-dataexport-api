@@ -1,5 +1,5 @@
 # Data Export OpenAPI Specification
-[![Build Status](https://travis-ci.org/thunderheadone/one-dataexport-api.svg?branch=master)](https://travis-ci.org/thunderheadone/one-dataexport-api)
+[![Build Status](https://travis-ci.com/thunderheadone/one-dataexport-api.svg?branch=master)](https://travis-ci.com/thunderheadone/one-dataexport-api)
 
 ## Links
 
